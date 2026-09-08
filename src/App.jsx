@@ -93,57 +93,15 @@ export default function App() {
           </section>
         )}
         {selectedAd && (
-          <>
-            <article className="card ad-detail">
-              <span className="category">{selectedAd.category}</span>
-              <h2>{selectedAd.title}</h2>
-              <p className="description">{selectedAd.description}</p>
-              <p className="hint safe-hint">
-                ✅ این مقدار توسط React به‌صورت متن render شده و HTML آن اجرا نمی‌شود.
-              </p>
-              <a className="button-link secondary" href="/">همه آگهی‌ها</a>
-            </article>
-
-            <section className="card exploit-guide">
-              <div className="section-heading">
-                <span className="icon-step">💡</span>
-                <div>
-                  <h2>تست آسیب‌پذیری SSR</h2>
-                  <p>برای مشاهده XSS باید User-Agent موبایل ارسال شود</p>
-                </div>
-              </div>
-              <div className="exploit-steps">
-                <div className="step">
-                  <span className="step-num">1</span>
-                  <div>
-                    <strong>DevTools را باز کنید</strong>
-                    <p>در Chrome: F12 → Network Conditions → User agent → Custom</p>
-                  </div>
-                </div>
-                <div className="step">
-                  <span className="step-num">2</span>
-                  <div>
-                    <strong>UA موبایل را وارد کنید</strong>
-                    <code className="ua-example">Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Mobile/15E148</code>
-                  </div>
-                </div>
-                <div className="step">
-                  <span className="step-num">3</span>
-                  <div>
-                    <strong>صفحه را Reload کنید</strong>
-                    <p>با زدن F5، سرور درخواست را با UA موبایل دریافت کرده و صفحه SSR برمی‌گرداند؛ پاپ‌آپ alert بلافاصله ظاهر می‌شود.</p>
-                  </div>
-                </div>
-                <div className="step">
-                  <span className="step-num">⌥</span>
-                  <div>
-                    <strong>یا با curl تست کنید</strong>
-                    <code className="ua-example">curl -s -A "Mozilla/5.0 (iPhone) Mobile" {window.location.href}</code>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </>
+          <article className="card ad-detail">
+            <span className="category">{selectedAd.category}</span>
+            <h2>{selectedAd.title}</h2>
+            <p className="description">{selectedAd.description}</p>
+            <p className="hint safe-hint">
+              ✅ این مقدار توسط React به‌صورت متن render شده و HTML آن اجرا نمی‌شود.
+            </p>
+            <a className="button-link secondary" href="/">همه آگهی‌ها</a>
+          </article>
         )}
       </main>
     );

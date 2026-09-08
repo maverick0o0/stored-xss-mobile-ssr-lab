@@ -1,0 +1,27 @@
+{
+  "name": "stored-xss-mobile-ssr-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An intentionally vulnerable lab demonstrating a stored XSS discrepancy between a safe React SPA and mobile SSR JSON-LD.",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k \"vite\" \"node --watch server/index.js\"",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "npm run build && node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "5.2.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.1.1",
+    "concurrently": "10.0.5",
+    "supertest": "7.1.4",
+    "vite": "8.2.2"
+  }
+}

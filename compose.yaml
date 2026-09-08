@@ -1,0 +1,12 @@
+services:
+  stored-xss-lab:
+    build: .
+    container_name: stored-xss-mobile-ssr-lab
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ad_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  ad_data:

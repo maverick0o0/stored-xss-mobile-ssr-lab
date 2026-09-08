@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap');
+
+:root {
+  font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  color: #172033;
+  background: #f4f6f8;
+}
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 10% 0%, rgba(239, 78, 47, 0.08), transparent 50%),
+    radial-gradient(ellipse at 90% 100%, rgba(174, 37, 20, 0.05), transparent 40%),
+    #f4f6f8;
+}
+
+.ssr-shell {
+  width: min(760px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 32px 0;
+}
+
+/* ─── Header ─── */
+.ssr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.ssr-header h1 {
+  margin: 7px 0 0;
+  font-size: 2.2rem;
+  font-weight: 900;
+}
+.eyebrow {
+  color: #ef4e2f;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* ─── Mode Badge (Vulnerable) ─── */
+.mode {
+  border: 1px solid;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: .72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.mode.vulnerable {
+  color: #a92e18;
+  background: #fff0ed;
+  border-color: #ffc3b7;
+  animation: pulse-vuln 2s ease-in-out infinite;
+}
+@keyframes pulse-vuln {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(174, 37, 20, 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(174, 37, 20, 0); }
+}
+
+/* ─── Warning ─── */
+.warning {
+  margin-bottom: 14px;
+  border: 1px solid #f1d59f;
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: #775218;
+  background: #fff7e7;
+  font-size: .84rem;
+  line-height: 1.8;
+}
+.warning code {
+  font-size: .78rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.06);
+}
+
+/* ─── Card ─── */
+.card {
+  border: 1px solid #dfe4ea;
+  border-radius: 18px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 1px 3px rgba(23, 32, 51, 0.04),
+    0 12px 38px rgba(23, 32, 51, 0.06);
+}
+
+/* ─── Ad Detail ─── */
+.category {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 7px 11px;
+  color: #9c321e;
+  background: #fff0ec;
+  font-size: .75rem;
+  font-weight: 800;
+}
+.card h2 {
+  margin: 17px 0 12px;
+  font-size: 2rem;
+  font-weight: 900;
+}
+.description {
+  margin: 0;
+  padding: 18px;
+  border-radius: 12px;
+  background: #f7f8fa;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid #dfe4ea;
+}
+
+/* ─── Hint ─── */
+.hint {
+  color: #a92e18;
+  font-size: .82rem;
+  line-height: 1.8;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: #fff0ed;
+  border: 1px solid #ffc3b7;
+}
+.hint code {
+  font-size: .78rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.06);
+}
+
+/* ─── Button ─── */
+.button {
+  display: inline-flex;
+  margin-top: 18px;
+  border-radius: 10px;
+  padding: 10px 15px;
+  color: #172033;
+  background: #eef1f4;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(23, 32, 51, 0.1);
+}
+
+@media (max-width: 520px) {
+  .ssr-header { align-items: flex-start; flex-direction: column; }
+}

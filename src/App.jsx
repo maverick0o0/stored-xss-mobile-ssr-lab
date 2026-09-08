@@ -184,13 +184,6 @@ export default function App() {
             </button>
           </div>
 
-          <div className="field-tip">
-            <strong>نکات مهم برای موفقیت XSS در این سناریو:</strong>
-            <ul>
-              <li>پی‌لود حتماً باید با <code>&lt;/script&gt;</code> شروع شود تا از تگ JSON-LD خارج شود.</li>
-              <li>از کوتیشن دوبل (<code>"</code>) در اتریبیوت‌ها استفاده نکنید (مانند <code>onerror="..."</code>)؛ زیرا <code>JSON.stringify</code> آن را به <code>\"</code> تبدیل کرده و خطای نحوی (SyntaxError) می‌دهد. از تک‌کوتیشن (<code>'</code>) یا بدون کوتیشن استفاده کنید.</li>
-            </ul>
-          </div>
 
           {error && <p className="error" role="alert">{error}</p>}
           <button type="submit">ثبت و مشاهده آگهی</button>

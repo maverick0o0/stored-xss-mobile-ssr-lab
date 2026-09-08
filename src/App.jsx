@@ -155,32 +155,9 @@ export default function App() {
         <div>
           <span className="eyebrow">Stored XSS Training Lab</span>
           <h1>آگهی‌خانه</h1>
-          <p>بازسازی تفاوت امنیتی بین React SPA و Mobile SSR با JSON-LD injection</p>
         </div>
         <span className="mode safe">React SPA · امن ✓</span>
       </header>
-
-      <section className="card how-it-works">
-        <div className="section-heading">
-          <span>🔬</span>
-          <div>
-            <h2>نحوه عملکرد آسیب‌پذیری</h2>
-            <p>دو مسیر render متفاوت، دو نتیجه امنیتی متفاوت</p>
-          </div>
-        </div>
-        <div className="render-paths">
-          <div className="render-path safe-path">
-            <h3>🖥️ Desktop → React SPA</h3>
-            <p>React به‌صورت خودکار HTML escape انجام می‌دهد. Payload به‌صورت متن نمایش داده می‌شود.</p>
-            <span className="badge badge-safe">امن</span>
-          </div>
-          <div className="render-path vuln-path">
-            <h3>📱 Mobile/Crawler → SSR</h3>
-            <p>توضیحات خام داخل <code>{"<script type=\"application/ld+json\">"}</code> قرار می‌گیرد. <code>{"</script>"}</code> بلاک را می‌بندد و XSS اجرا می‌شود.</p>
-            <span className="badge badge-vuln">آسیب‌پذیر</span>
-          </div>
-        </div>
-      </section>
 
       <section className="grid">
         <form className="card form-card" onSubmit={submitAd}>

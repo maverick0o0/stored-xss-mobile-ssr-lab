@@ -49,67 +49,138 @@ The core issue is a **JSON-LD injection** in server-side rendered pages:
 | Googlebot, bingbot | SSR → JSON-LD `<script>` | **None** (raw) | ❌ **Vulnerable** |
 | TelegramBot, WhatsApp, Discordbot | SSR → JSON-LD `<script>` | **None** (raw) | ❌ **Vulnerable** |
 
-## Quick Start with Docker
+## 🚀 Lab Setup & Installation
 
-```bash
-docker compose up --build
-```
+You can run this lab either using **Docker** (recommended for isolation and matching the original SSR environment) or directly with **Node.js**.
 
-Open [http://localhost:3000](http://localhost:3000), create an ad, and use one of these proof payloads in the **description**:
+### Prerequisites
 
-**Recommended (Direct `<script>` tag breakout):**
-```html
-</script><script>alert('Stored XSS via JSON-LD breakout')</script>
-```
+* **Docker Option**: [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Engine with the Docker Compose plugin.
+* **Local Node Option**: [Node.js](https://nodejs.org/) v20.x or higher, and `npm` v10.x+.
 
-**Alternative (`<img>` onerror without double quotes):**
-```html
-</script><img src=x onerror=alert('Stored XSS via JSON-LD breakout')>
-```
+---
+
+### Method 1: Docker (Recommended)
+
+This method packages the Express SSR backend and compiled React SPA in an isolated Alpine container binding safely to `127.0.0.1:3000`.
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/maverick0o0/stored-xss-mobile-ssr-lab.git
+   cd stored-xss-mobile-ssr-lab
+   ```
+
+2. **Build and start the container**:
+   ```bash
+   docker compose up --build -d
+   ```
+
+3. **Verify the container is healthy**:
+   ```bash
+   curl -s http://localhost:3000/health
+   # Expected output: {"status":"ok"}
+   ```
+
+4. **Access the application**:
+   Open your browser at [**http://localhost:3000**](http://localhost:3000).
+
+5. **Stopping and resetting the lab**:
+   ```bash
+   # Stop the container
+   docker compose down
+
+   # Stop and completely erase all stored ads (resets the database)
+   docker compose down -v
+   ```
+
+---
+
+### Method 2: Local Development (Node.js)
+
+If you prefer running directly on your host machine without Docker:
+
+1. **Clone and install dependencies**:
+   ```bash
+   git clone https://github.com/maverick0o0/stored-xss-mobile-ssr-lab.git
+   cd stored-xss-mobile-ssr-lab
+   npm install
+   ```
+
+2. **Development Mode (Vite HMR + Backend)**:
+   ```bash
+   npm run dev
+   ```
+   * Vite dev server will start on [**http://localhost:5173**](http://localhost:5173) and automatically proxy API requests to Express on port `3000`.
+
+3. **Production Mode (Single Port 3000)**:
+   ```bash
+   # 1. Build client SPA assets
+   npm run build
+
+   # 2. Start the Express server
+   npm start
+   ```
+   * Open [**http://localhost:3000**](http://localhost:3000).
+
+---
+
+## 🧪 Testing the Vulnerability
+
+Once the lab is running on [http://localhost:3000](http://localhost:3000):
+
+### 1. Create an Ad with an XSS Payload
+In the form, fill in a title and category, then insert one of the proof payloads into the **description**:
+
+* **Recommended (Direct `<script>` tag breakout):**
+  ```html
+  </script><script>alert('Stored XSS via JSON-LD breakout')</script>
+  ```
+* **Alternative (`<img>` onerror without double quotes):**
+  ```html
+  </script><img src=x onerror=alert('Stored XSS via JSON-LD breakout')>
+  ```
 
 > [!IMPORTANT]
 > **Why do double quotes (`"`) fail in attribute payloads?**
 > The server serializes the JSON-LD with `JSON.stringify(ad.description)`. If you submit double quotes (e.g. `onerror="..."`), `JSON.stringify` escapes them to `\"`. In the rendered HTML this becomes `onerror=\"...\"`. In HTML5 parsing, the backslash is not an escape character for quotes, so the attribute value becomes literal `\"...\"`. When evaluated by the JS engine, this causes an unhandled `SyntaxError: Invalid or unexpected token`. Always use `<script>` tags, single quotes (`'`), or unquoted values.
 
-### Test the two render paths
+### 2. Verify the Two Render Paths
 
-On a normal desktop browser, open the ad. The payload appears as **text** — React auto-escapes it. Safe.
+* **Desktop User-Agent (Safe)**:
+  Open the ad detail page in a standard browser. React client-side rendering auto-escapes the description. The payload is rendered harmlessly as plain text.
 
-Then switch your browser's User-Agent to mobile (F12 → Network Conditions → User Agent → Custom: iPhone or Android) and reload the page (`/ads/:id`). The server returns SSR, the JSON-LD block is terminated early by `</script>`, and the `alert()` fires immediately.
+* **Mobile User-Agent (Vulnerable SSR)**:
+  1. Open Chrome DevTools (`F12`).
+  2. Click the three dots menu (top-right of DevTools) → **More tools** → **Network conditions**.
+  3. Under **User agent**, uncheck *"Use browser default"* and select a mobile device (e.g., **Chrome — Android Mobile** or **Safari — iPhone iOS**).
+  4. Reload the page (`F5` or `Ctrl+R`).
+  5. The server serves the SSR variant with raw JSON-LD reflection, the `</script>` tag breaks out, and the `alert()` executes immediately.
 
-You can also compare directly with curl:
+* **Compare directly via CLI (`curl`)**:
+  ```bash
+  # Desktop UA: gets safe SPA shell (payload is NOT in the HTML)
+  curl -s http://localhost:3000/ads/YOUR_AD_ID \
+    -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/140"
 
-```bash
-# Desktop: safe React shell — the stored payload is NOT in the HTML.
-curl -s http://localhost:3000/ads/AD_ID \
-  -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/140"
+  # Mobile UA: gets vulnerable SSR (raw payload is embedded in JSON-LD)
+  curl -s http://localhost:3000/ads/YOUR_AD_ID \
+    -A "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Mobile/15E148"
 
-# Mobile: vulnerable SSR — the raw payload is embedded in JSON-LD.
-curl -s http://localhost:3000/ads/AD_ID \
-  -A "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Mobile/15E148"
+  # Googlebot UA: also receives the vulnerable SSR page
+  curl -s http://localhost:3000/ads/YOUR_AD_ID \
+    -A "Googlebot/2.1"
+  ```
 
-# Googlebot: also gets the vulnerable SSR.
-curl -s http://localhost:3000/ads/AD_ID \
-  -A "Googlebot/2.1"
-```
+---
 
-Stop with `docker compose down`. Remove stored ads: `docker compose down -v`.
+## 🔧 Troubleshooting & Tips
 
-## Local Development
-
-Requires Node.js 20+.
-
-```bash
-npm install
-npm run dev
-```
-
-Vite runs on port 5173, proxying API routes to Express on port 3000. For production mode:
-
-```bash
-npm run build
-npm start
-```
+| Issue | Cause | Solution |
+|---|---|---|
+| **Port 3000 already in use** | Another service is using port 3000 | In `compose.yaml`, change `"127.0.0.1:3000:3000"` to `"127.0.0.1:8080:3000"`, or set `PORT=8080 npm start`. |
+| **Alert popup does not appear on reload** | DevTools cache or desktop UA still active | Ensure "Network conditions" has mobile UA selected and refresh with `Ctrl+Shift+R` / `F5`. Ensure your payload begins with `</script>`. |
+| **Reset all created ads** | Need a clean state | Run `docker compose down -v` or delete `data/ads.json`. |
+| **Docker daemon not running** | Docker Desktop is closed | Start Docker Desktop or verify Docker service with `docker info`. |
 
 ## Tests
 

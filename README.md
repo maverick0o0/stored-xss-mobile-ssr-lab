@@ -55,17 +55,27 @@ The core issue is a **JSON-LD injection** in server-side rendered pages:
 docker compose up --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000), create an ad, and use this proof payload in the **description**:
+Open [http://localhost:3000](http://localhost:3000), create an ad, and use one of these proof payloads in the **description**:
 
+**Recommended (Direct `<script>` tag breakout):**
 ```html
-</script><img src=x onerror="document.body.dataset.xss='executed';alert('Stored XSS via JSON-LD breakout')">
+</script><script>alert('Stored XSS via JSON-LD breakout')</script>
 ```
+
+**Alternative (`<img>` onerror without double quotes):**
+```html
+</script><img src=x onerror=alert('Stored XSS via JSON-LD breakout')>
+```
+
+> [!IMPORTANT]
+> **Why do double quotes (`"`) fail in attribute payloads?**
+> The server serializes the JSON-LD with `JSON.stringify(ad.description)`. If you submit double quotes (e.g. `onerror="..."`), `JSON.stringify` escapes them to `\"`. In the rendered HTML this becomes `onerror=\"...\"`. In HTML5 parsing, the backslash is not an escape character for quotes, so the attribute value becomes literal `\"...\"`. When evaluated by the JS engine, this causes an unhandled `SyntaxError: Invalid or unexpected token`. Always use `<script>` tags, single quotes (`'`), or unquoted values.
 
 ### Test the two render paths
 
-On a normal desktop browser, open the ad. The payload appears as **text** — React escapes it. Safe.
+On a normal desktop browser, open the ad. The payload appears as **text** — React auto-escapes it. Safe.
 
-Then switch your browser's User-Agent to mobile (F12 → Network Conditions → User Agent) and reload. The server returns SSR, the JSON-LD block is terminated early, and `alert()` fires.
+Then switch your browser's User-Agent to mobile (F12 → Network Conditions → User Agent → Custom: iPhone or Android) and reload the page (`/ads/:id`). The server returns SSR, the JSON-LD block is terminated early by `</script>`, and the `alert()` fires immediately.
 
 You can also compare directly with curl:
 

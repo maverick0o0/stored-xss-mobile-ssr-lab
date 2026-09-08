@@ -243,15 +243,65 @@ button { width: 100%; margin-top: 14px; }
   box-shadow: 0 4px 12px rgba(23, 32, 51, 0.1);
 }
 
+.payload-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+@media (max-width: 600px) {
+  .payload-buttons {
+    grid-template-columns: 1fr;
+  }
+}
 .fill-payload-btn {
   background: #1a1e2e;
   color: #ffd6cc;
   font-size: .82rem;
-  margin-top: 10px;
+  margin-top: 0;
+  padding: 10px 12px;
 }
 .fill-payload-btn:hover {
   background: #2d3348;
   box-shadow: 0 4px 12px rgba(26, 30, 46, 0.3);
+}
+.secondary-payload-btn {
+  background: #242938;
+  color: #a5b4fc;
+}
+.secondary-payload-btn:hover {
+  background: #31374d;
+}
+.field-tip {
+  font-size: 0.82rem;
+  color: #4b5563;
+  line-height: 1.6;
+  background: #f8fafc;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  border: 1px solid #e2e8f0;
+  border-right: 4px solid var(--accent);
+}
+.field-tip strong {
+  color: #1e293b;
+  display: block;
+  margin-bottom: 6px;
+}
+.field-tip ul {
+  margin: 0;
+  padding-right: 18px;
+}
+.field-tip li {
+  margin-bottom: 4px;
+}
+.field-tip code {
+  background: #e2e8f0;
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: #b91c1c;
+  font-size: 0.8rem;
+  font-family: monospace;
 }
 
 /* ─── Ad List ─── */

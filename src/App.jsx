@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 
 const emptyForm = { title: "", description: "", category: "" };
 
-const SAMPLE_PAYLOAD = `</script><img src=x onerror="document.body.dataset.xss='executed';alert('Stored XSS via JSON-LD breakout')">`;
+const SAMPLE_PAYLOAD_SCRIPT = `</script><script>alert('Stored XSS via JSON-LD breakout')</script>`;
+const SAMPLE_PAYLOAD_IMG = `</script><img src=x onerror=alert('Stored XSS via JSON-LD breakout')>`;
 
 const CATEGORIES = [
   "کالای دیجیتال",
@@ -47,12 +48,10 @@ export default function App() {
     }));
   }
 
-  function fillPayload() {
+  function fillPayload(payload) {
     setForm((previous) => ({
       ...previous,
-      description: previous.description
-        ? previous.description + "\n" + SAMPLE_PAYLOAD
-        : SAMPLE_PAYLOAD
+      description: payload
     }));
   }
 
@@ -132,7 +131,7 @@ export default function App() {
                   <span className="step-num">3</span>
                   <div>
                     <strong>صفحه را Reload کنید</strong>
-                    <p>سرور SSR برمی‌گرداند — JSON-LD خام اجرا می‌شود.</p>
+                    <p>با زدن F5، سرور درخواست را با UA موبایل دریافت کرده و صفحه SSR برمی‌گرداند؛ پاپ‌آپ alert بلافاصله ظاهر می‌شود.</p>
                   </div>
                 </div>
                 <div className="step">
@@ -233,13 +232,30 @@ export default function App() {
             />
           </label>
 
-          <button
-            type="button"
-            className="fill-payload-btn"
-            onClick={fillPayload}
-          >
-            🎯 درج Payload نمونه XSS
-          </button>
+          <div className="payload-buttons">
+            <button
+              type="button"
+              className="fill-payload-btn"
+              onClick={() => fillPayload(SAMPLE_PAYLOAD_SCRIPT)}
+            >
+              🎯 پی‌لود اسکریپت (توصیه‌شده)
+            </button>
+            <button
+              type="button"
+              className="fill-payload-btn secondary-payload-btn"
+              onClick={() => fillPayload(SAMPLE_PAYLOAD_IMG)}
+            >
+              🖼️ پی‌لود تگ img
+            </button>
+          </div>
+
+          <div className="field-tip">
+            <strong>نکات مهم برای موفقیت XSS در این سناریو:</strong>
+            <ul>
+              <li>پی‌لود حتماً باید با <code>&lt;/script&gt;</code> شروع شود تا از تگ JSON-LD خارج شود.</li>
+              <li>از کوتیشن دوبل (<code>"</code>) در اتریبیوت‌ها استفاده نکنید (مانند <code>onerror="..."</code>)؛ زیرا <code>JSON.stringify</code> آن را به <code>\"</code> تبدیل کرده و خطای نحوی (SyntaxError) می‌دهد. از تک‌کوتیشن (<code>'</code>) یا بدون کوتیشن استفاده کنید.</li>
+            </ul>
+          </div>
 
           {error && <p className="error" role="alert">{error}</p>}
           <button type="submit">ثبت و مشاهده آگهی</button>

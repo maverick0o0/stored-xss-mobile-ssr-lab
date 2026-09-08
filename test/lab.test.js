@@ -11,7 +11,7 @@ let dataFile;
 let app;
 let ad;
 
-const payload = `</script><img src=x onerror="document.body.dataset.xss='executed'">`;
+const payload = `</script><script>document.body.dataset.xss='executed';alert('XSS')</script>`;
 
 const DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/140 Safari/537.36";
 const MOBILE_UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Mobile/15E148";
@@ -80,10 +80,10 @@ test("mobile user agents receive vulnerable SSR with raw description in JSON-LD"
 
   assert.equal(response.status, 200);
   assert.match(response.text, /data-render-mode="mobile-ssr"/);
-  // The raw </script> breaks out of the JSON-LD block
-  assert.match(response.text, /<script type="application\/ld\+json">.*<\/script><img src=x onerror=/s);
+  // The raw </script> breaks out of the JSON-LD block, injected <script> becomes live
+  assert.match(response.text, /<script type="application\/ld\+json">.*<\/script><script>document\.body/s);
   // The body (React-rendered) properly escapes the same value
-  assert.match(response.text, /&lt;\/script&gt;&lt;img/);
+  assert.match(response.text, /&lt;\/script&gt;&lt;script&gt;/);
 });
 
 // ─── Crawler SSR (Vulnerable) ───
@@ -102,7 +102,7 @@ describe("crawler user agents receive SSR", () => {
       assert.equal(response.status, 200);
       assert.match(response.text, /data-render-mode="mobile-ssr"/);
       assert.match(response.text, /<script type="application\/ld\+json">/);
-      assert.match(response.text, /<\/script><img src=x onerror=/s);
+      assert.match(response.text, /<\/script><script>document\.body/s);
     });
   }
 });
